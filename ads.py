@@ -46,9 +46,6 @@ def ads(author=""):
 
         tailLatex = "</body></html>"
 
-        #author = "Gonzalez Martin, Omaira"
-        #author = "Carrasco Gonzalez, Carlos"
-        #author = "Palau, Aina"
         authorOrig = author
         author = author.replace(" ","+").replace(",","%2C")
 
