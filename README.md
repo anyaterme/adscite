@@ -2,9 +2,11 @@
 Get cites from ADSabs
 
 ==== REQUIREMENTS ====
-
-You must to have installed wkhtmltopdf
+Python 2.7.15
+You must to have installed wkhtmltopdf and pdfunite
 
 ==== USE ====
 
 ./run.sh
+
+--- Output: summary.pdf
