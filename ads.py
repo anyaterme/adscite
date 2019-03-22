@@ -224,7 +224,7 @@ def ads(author=""):
             numH = idx+1
 
         f5.write("<h2>Resumen</h2>")
-        f5.write('<br><strong>Fecha:</strong> %s<br>' % datetime.datetime.today().strftime("%Y/%M/%d"))
+        f5.write('<br><strong>Fecha:</strong> %s<br>' % datetime.datetime.today().strftime("%Y/%m/%d"))
         f5.write('<br><strong>Total citas:</strong> %d<br>' % (total_cites))
         f5.write('<br><strong>Tipo A:</strong> %d (%.1lf %%)<br>' % (a_counter, a_counter*100./total_cites))
         f5.write('<br><strong>Tipo B:</strong> %d (%.1lf %%)<br>' % (b_counter, b_counter*100./total_cites ))
