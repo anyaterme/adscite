@@ -14,6 +14,7 @@ import codecs
 import unicodedata
 import re
 import datetime
+import string
 
 def remove_accents(cadena):
     s = ''.join((c for c in unicodedata.normalize('NFD',unicode(cadena)) if unicodedata.category(c) != 'Mn'))
@@ -80,7 +81,7 @@ def ads(author=""):
         cites_to_art = []
 
         cont = 0
-        for article in articles:
+        for idx,article in enumerate(articles):
             cont+=1
             externalArts = []
             noautoArts = []
@@ -88,7 +89,7 @@ def ads(author=""):
             title = article.getElementsByTagName("title").item(0).firstChild.nodeValue
             links = article.getElementsByTagName("link")
             authors = article.getElementsByTagName("author")
-            mystr = "Review %s" % (title)
+            mystr = "[%4d] Review %s" % (idx,title)
             print (mystr.encode('latin-1', 'replace'))
             line = "<h3>\"%s\": " % (title)
             line4 = "<h3>\"%s\": " % (title)
@@ -103,7 +104,11 @@ def ads(author=""):
                 if (link.getAttribute("type") == "CITATIONS"):
                     url = "%s&data_type=SHORT_XML" % link.getElementsByTagName("url").item(0).firstChild.nodeValue
                     response = urllib2.urlopen(url)
-                    refXml = minidom.parseString(response.read())
+                    text = response.read()
+                    try:
+                        refXml = minidom.parseString(str(text))
+                    except:
+                        pass
                     refArticles = refXml.getElementsByTagName("record")
                     cites_to_art.append(len(refArticles))
                     for refArticle in refArticles:
