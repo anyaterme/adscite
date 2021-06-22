@@ -76,7 +76,7 @@ for paper in papers:
 #                 else:
 #                     type_a.append(cite)
     except Exception as e:
-        print (show_exc(e))
+        # print (show_exc(e))
         pass
     types_a[paper.title[0]] = type_a
     types_b[paper.title[0]] = type_b
