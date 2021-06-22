@@ -9,4 +9,4 @@ You must to have installed wkhtmltopdf and pdfunite
 
 ./run.sh
 
---- Output: summary.pdf
+--- Output: fullreport.pdf

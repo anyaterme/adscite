@@ -5,4 +5,4 @@ do
 	wkhtmltopdf -L 15mm -T 15mm -B 15mm -R 15mm $f $filename.pdf
 done
 
-pdfunite 00*.pdf summary.pdf
+pdfunite *.pdf fullreport.pdf
