@@ -20,7 +20,7 @@ def first_item(items):
 #ads.config.token = 'Ekk7tm7P8bK6uCBLBYUllIpnv1NO4H4DKcNo7Xaz'
 ads.config.token = '1yepOSln5yBKIroE6CAUbYym7cOH8h8K20fLXgIU'
 
-papers = ads.SearchQuery(q='author:("Pasetto, A." OR "Pasetto, Alice")  year:2018-2021 property:refereed collection:astronomy', sort="date", rows=2000)
+papers = ads.SearchQuery(q='author:("Bruzual, G." OR "Bruzual, Gustavo")  year:1960-2021 property:refereed collection:astronomy', sort="date", rows=2000)
 
 counter = 0
 types_a = {}
@@ -41,7 +41,7 @@ for paper in papers:
         counter_cites = 0
         for cite in cites_papers:
             counter_cites += 1
-            if ('Pasetto, A.' in cite.author or 'Pasetto, Alice' in cite.author) :
+            if ('Bruzual, G.' in cite.author or 'Bruzual, Gustavo' in cite.author) :
                 autocite.append(cite)
             else:
                 in_papers = set([author.translate(trans) for author in paper.author])
@@ -161,7 +161,7 @@ autocites_counter = aux_counter
 print("\nGenerating Summary")
 f = open("%d_summary.html" % prefix, "w")
 f.write('<html><head><meta charset="UTF-8"></meta></head><body style="padding:0 5%">\n')
-f.write('<h1>Citas a trabajo de investigación de Pasetto, Alice</h1>\n')
+f.write('<h1>Citas a trabajo de investigación de Bruzual, Gustavo</h1>\n')
 f.write('<h2>Resumen</h2>\n')
 f.write('<strong>Fecha:</strong> %s<br><br>\n' % datetime.datetime.today().strftime('%Y/%m/%d'))
 f.write('<strong>Total Citas:</strong> %d<br><br>\n' % (type_a_counter + type_b_counter + autocites_counter))
