@@ -5,6 +5,9 @@ Get cites from ADSabs
 Python 2.7.15
 You must to have installed wkhtmltopdf and pdfunite
 
+Install requirements.txt
+    - pip install -r requirements.txt
+
 ==== USE ====
 
 ./run.sh
