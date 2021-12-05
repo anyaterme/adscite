@@ -24,8 +24,7 @@ if __name__ == "__main__":
     parser.add_argument('author', type=str, help="Author (multiples references separated by ;)")
 
     args = parser.parse_args()
-    #ads.config.token = 'Ekk7tm7P8bK6uCBLBYUllIpnv1NO4H4DKcNo7Xaz'
-    ads.config.token = '1yepOSln5yBKIroE6CAUbYym7cOH8h8K20fLXgIU'
+    ads.config.token = ''
 
     ref_authors = args.author.split(';')
     ref_authors_list = ['"{}"'.format(i.strip()) for i in ref_authors]
