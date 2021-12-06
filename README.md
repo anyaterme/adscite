@@ -11,6 +11,9 @@ Install requirements.txt
 
 ==== USE ====
 
-./run.sh
+./run.sh 'Diaz-Gonzalez, D.; Diaz-Gonzalez, Daniel Jacobo' 9999
+
+'Diaz-Gonzalez,D.; Diaz-Gonzalez, Daniel Jacobo' => Author in multiples formats separated by ';'.
+9999 => The N=9999 papers with highest citation number. 
 
 --- Output: fullreport.pdf

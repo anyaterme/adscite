@@ -17,12 +17,12 @@ options = {
         'outline-depth': 10,
 }
 
-cites = sorted(glob.glob("1*cites_a.html"))[-1]
-pdfkit.from_url(cites, '00_cites_a.pdf', options=options)
-cites = sorted(glob.glob("1*cites_b.html"))[-1]
-pdfkit.from_url(cites, '01_cites_b.pdf', options=options)
-cites = sorted(glob.glob("1*autocites.html"))[-1]
-pdfkit.from_url(cites, '02_autocites.pdf', options=options)
 summary = sorted(glob.glob("1*summary.html"))[-1]
-pdfkit.from_url(summary, '03_summary.pdf', options=options)
+pdfkit.from_url(summary, '00_summary.pdf', options=options)
+cites = sorted(glob.glob("1*cites_a.html"))[-1]
+pdfkit.from_url(cites, '01_cites_a.pdf', options=options)
+cites = sorted(glob.glob("1*cites_b.html"))[-1]
+pdfkit.from_url(cites, '02_cites_b.pdf', options=options)
+cites = sorted(glob.glob("1*autocites.html"))[-1]
+pdfkit.from_url(cites, '03_autocites.pdf', options=options)
 
