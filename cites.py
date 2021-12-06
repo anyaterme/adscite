@@ -30,7 +30,7 @@ if __name__ == "__main__":
     ref_authors_list = ['"{}"'.format(i.strip()) for i in ref_authors]
     ref_authors = ' OR '.join(ref_authors_list)
 
-    papers = ads.SearchQuery(q='author:({})  year:1960-2021 property:refereed collection:astronomy'.format(ref_authors), sort="date", rows=2000)
+    papers = ads.SearchQuery(q='author:({}) year:1960-2021'.format(ref_authors), sort="citation_count desc", rows=2000)
 
     counter = 0
     types_a = {}
@@ -46,57 +46,71 @@ if __name__ == "__main__":
         type_b = []
         autocite = []
         print("Getting info about {0} [{1}].... ".format(paper.title, paper.year))
-        try:
-            query_str = 'citations(bibcode:"{0}" OR doi:"{0}")'.format(paper.doi[0])
-            cites_papers = ads.SearchQuery(q=query_str)
-            counter_cites = 0
-            for cite in cites_papers:
-                counter_cites += 1
-                is_autocite = False
-                for i in ref_authors_list:
-                    if i.replace('"','') in cite.author:
-                        autocite.append(cite)
-                        is_autocite = True
-                        break
-                if not is_autocite:
-                    in_papers = set([author.translate(trans) for author in paper.author])
-                    in_cites = set([author.translate(trans) for author in cite.author])
-                    in_paper_aux = []
-                    for author in in_papers:
-                        fields = author.split(',')
-                        aux = fields[0]
-                        cadena = ''
-                        for f in fields[1:]:
-                            cadena += f.strip()[0]+'.'
-                        in_paper_aux.append('{}, {}'.format(aux, cadena))
+        if paper.doi is not None and paper.bibcode is not None and paper.bibcode != '':
+            query_str = 'citations(bibcode:"{0}" OR doi:"{1}")'.format(paper.bibcode, paper.doi[0])
+        elif paper.doi is not None:
+            query_str = 'citations(doi:"{0}")'.format(paper.doi[0])
+        elif paper.bibcode is not None:
+            query_str = 'citations(bibcode:"{0}")'.format(paper.bibcode)
+        else:
+            query_str = None
 
-                    in_cites_aux = []
-                    for author in in_cites:
-                        fields = author.split(',')
-                        aux = fields[0]
-                        cadena = ''
-                        for f in fields[1:]:
-                            cadena += f.strip()[0]+'.'
-                        in_cites_aux.append('{}, {}'.format(aux, cadena))
 
-                    in_papers = in_paper_aux
-                    in_cites = in_cites_aux
-                    #cites_a = list(set(paper.author) & set(cite.author))
-                    cites_a = list(set(in_papers) & set(in_cites))
-                    type_b.append(cite)
-                    if len(cites_a) == 0:
-                        type_a.append(cite)
-#                 if len(cites_a) > 0:
-#                     type_b.append(cite)
-#                 else:
-#                     type_a.append(cite)
-        except Exception as e:
-            # print (show_exc(e))
-            pass
+        if query_str is not None:
+            rows = 2000
+            page = 0
+            in_papers = set([author.translate(trans) for author in paper.author])
+            while rows == 2000:
+                rows = 0
+                cites_papers = ads.SearchQuery(q=query_str, rows=2000, start=2000*page)
+                if cites_papers is not None:
+                    page += 1
+                    for cite in cites_papers:
+                        rows += 1
+                        try:
+                            is_autocite = False
+                            for i in ref_authors_list:
+                                if i.replace('"','') in cite.author:
+                                    autocite.append(cite)
+                                    is_autocite = True
+                                    break
+                            if not is_autocite:
+                                in_cites = set([author.translate(trans) for author in cite.author])
+                                in_paper_aux = []
+                                for author in in_papers:
+                                    fields = author.split(',')
+                                    aux = fields[0]
+                                    cadena = ''
+                                    for f in fields[1:]:
+                                        cadena += f.strip()[0]+'.'
+                                    in_paper_aux.append('{}, {}'.format(aux, cadena))
+
+                                in_cites_aux = []
+                                for author in in_cites:
+                                    fields = author.split(',')
+                                    aux = fields[0]
+                                    cadena = ''
+                                    for f in fields[1:]:
+                                        cadena += f.strip()[0]+'.'
+                                    in_cites_aux.append('{}, {}'.format(aux, cadena))
+
+                                in_papers = in_paper_aux
+                                in_cites = in_cites_aux
+                                #cites_a = list(set(paper.author) & set(cite.author))
+                                cites_a = list(set(in_papers) & set(in_cites))
+                                type_b.append(cite)
+                                if len(cites_a) == 0:
+                                    type_a.append(cite)
+                        except Exception as e:
+                            print (show_exc(e))
+                            pass
+                print(rows)
+
         types_a[paper.title[0]] = type_a
         types_b[paper.title[0]] = type_b
         autocites[paper.title[0]] = autocite
         list_papers[paper.title[0]] = paper
+
 
     print("")
     type_a = 0
@@ -107,15 +121,8 @@ if __name__ == "__main__":
         type_b = type_b + len(types_b[paper])
         autocite = autocite + len(autocites[paper])
 
-    print (type_a, type_b, autocite)
-
     prefix = time.time()
     print ("Info request finished".ljust(100))
-
-
-
-    print ("Info request finished".ljust(100))
-#f = open("aux_summary.html" % time.time())
     f = open("%d_cites_a.html" % prefix, "w")
     f.write('<html><head>   <meta charset="UTF-8"></meta></head><body style="padding:0 5%">\n')
     f.write('<h1>Citas Tipo A</h1>\n')
@@ -179,10 +186,10 @@ if __name__ == "__main__":
     f.write('<h1>Citas a trabajo de investigación </h1>\n')
     f.write('<h2>Resumen</h2>\n')
     f.write('<strong>Fecha:</strong> %s<br><br>\n' % datetime.datetime.today().strftime('%Y/%m/%d'))
-    f.write('<strong>Total Citas:</strong> %d<br><br>\n' % (type_a_counter + type_b_counter + autocites_counter))
-    f.write('<strong>Tipo A:</strong> %d (%.2lf %%)<br><br>\n' % (type_a_counter, type_a_counter/(type_a_counter + type_b_counter + autocites_counter)*100))
-    f.write('<strong>Tipo B:</strong> %d (%.2lf %%)<br><br>\n' % (type_b_counter, type_b_counter/(type_a_counter + type_b_counter + autocites_counter)*100))
-    f.write('<strong>Autocitas:</strong> %d (%.2lf %%)<br><br>\n' % (autocites_counter, autocites_counter/(type_a_counter + type_b_counter + autocites_counter)*100))
+    f.write('<strong>Total Citas:</strong> %d<br><br>\n' % (type_b_counter + autocites_counter))
+    f.write('<strong>Tipo A:</strong> %d (%.2lf %%)<br><br>\n' % (type_a_counter, type_a_counter/(type_b_counter + autocites_counter)*100))
+    f.write('<strong>Tipo B:</strong> %d (%.2lf %%)<br><br>\n' % (type_b_counter, type_b_counter/(type_b_counter + autocites_counter)*100))
+    f.write('<strong>Autocitas:</strong> %d (%.2lf %%)<br><br>\n' % (autocites_counter, autocites_counter/(type_b_counter + autocites_counter)*100))
     f.write('Fuente: SAO/NASA ADS = https://ui.adsabs.harvard.edu<br>')
     f.write('<h2>Definiciones SNI</h2>\n')
     f.write('<strong>Citas Tipo A:</strong> Aquellas citas realizadas en productos de investigación firmados por uno o varios autores dentro de los cuales no hay ninguno que sea autor del trabajo referido a la cita.<br><br>\n')
