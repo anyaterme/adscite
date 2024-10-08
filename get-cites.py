@@ -17,7 +17,6 @@ def first_item(items):
     else:
         return items
 
-ads.config.token = '1yepOSln5yBKIroE6CAUbYym7cOH8h8K20fLXgIU'
 author = ['Gonzalez-Martin, O.', 'Gonzalez-Martin, Omaira']
 papers = ads.SearchQuery(q=f"author:'{author[0]}'  collection:astronomy", sort="date", rows=2000,  fl=['bibcode','doi','author','year','title','citation_count','citation','pub'])
 
