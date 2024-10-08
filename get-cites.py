@@ -4,6 +4,7 @@ import pdfkit
 import sys
 import datetime
 import pickle
+import argparse
 
 def show_exc(e):
     import sys
@@ -17,69 +18,78 @@ def first_item(items):
     else:
         return items
 
-ads.config.token = ''       ## Please insert your api key
-author = ['Gonzalez-Martin, O.', 'Gonzalez-Martin, Omaira']
-papers = ads.SearchQuery(q=f"author:'{author[0]}'  collection:astronomy", sort="date", rows=2000,  fl=['bibcode','doi','author','year','title','citation_count','citation','pub'])
+if __name__ == "__main__":
+    author = ['Gonzalez-Martin, O.', 'Gonzalez-Martin, Omaira']
+    parser = argparse.ArgumentParser()
+    parser.add_argument('apikey', type=str, help='ADS APIKEY')
+    parser.add_argument('author', nargs="+", help='Nombre del author en distintos formatos. Cada author debe ir entre comillas', default=author)
+    parser.add_argument('-o', '--output', type=str, default=f'{int(time.time())}_cites.bin', help='Nombre del archivo binario con las citas almacenadas')
+    args = parser.parse_args()
 
-counter = 0
-types_a = {}
-types_b = {}
-autocites = {}
-list_papers = {}
-citations = {}
-for paper in papers:
-    counter += 1
-    type_a = []
-    type_b = []
-    autocite = []
-    try:
-        print("Getting info about {0} [{1}].... ".format(paper.title, paper.year))
+    ads.config.token = args.apikey
+    author = args.author
+
+    papers = ads.SearchQuery(q=f"author:'{author[0]}'  collection:astronomy", sort="date", rows=2000,  fl=['bibcode','doi','author','year','title','citation_count','citation','pub'])
+
+    counter = 0
+    types_a = {}
+    types_b = {}
+    autocites = {}
+    list_papers = {}
+    citations = {}
+    for paper in papers:
+        counter += 1
+        type_a = []
+        type_b = []
+        autocite = []
+        try:
+            print("Getting info about {0} [{1}].... ".format(paper.title, paper.year))
 #         query_str = 'citations(bibcode:"{0}" OR doi:"{0}")'.format(paper.bibcode)
 #         cites_papers = ads.SearchQuery(q=query_str, rows=5000)
-        cites_papers = paper.citation
-        if cites_papers is None:
-            continue
-        counter_cites = 0
-        for bibcode in cites_papers:
-            try:
-                if (bibcode not in citations.keys()):
-                    query_str = 'bibcode:"{0}"'.format(bibcode)
-                    cite = list(ads.SearchQuery(q=query_str, fl=['title','pub','author', 'bibcode', 'year']))[0]
-                    citations[bibcode] = cite
-                else:
-                    cite = citations[bibcode]
-            except:
-                citations[bibcode] = None
-                cite = None
-            if cite is not None:
-                is_autocite = False
-                counter_cites += 1
-                for selfauthor in author:
-                    if selfauthor in cite.author:
-                        is_autocite = True
-                        break
-                if is_autocite:
-                    autocite.append(cite)
-                else:
-                    cites_a = list(set(paper.author) & set(cite.author))
-                    if len(cites_a) > 0:
-                        type_b.append(cite)
+            cites_papers = paper.citation
+            if cites_papers is None:
+                continue
+            counter_cites = 0
+            for bibcode in cites_papers:
+                try:
+                    if (bibcode not in citations.keys()):
+                        query_str = 'bibcode:"{0}"'.format(bibcode)
+                        cite = list(ads.SearchQuery(q=query_str, fl=['title','pub','author', 'bibcode', 'year']))[0]
+                        citations[bibcode] = cite
                     else:
-                        type_a.append(cite)
-        types_a[paper.title[0]] = type_a
-        types_b[paper.title[0]] = type_b
-        autocites[paper.title[0]] = autocite
-        list_papers[paper.title[0]] = paper
-    except Exception as e:
-        print(show_exc(e))
-        sys.exit()
+                        cite = citations[bibcode]
+                except:
+                    citations[bibcode] = None
+                    cite = None
+                if cite is not None:
+                    is_autocite = False
+                    counter_cites += 1
+                    for selfauthor in author:
+                        if selfauthor in cite.author:
+                            is_autocite = True
+                            break
+                    if is_autocite:
+                        autocite.append(cite)
+                    else:
+                        cites_a = list(set(paper.author) & set(cite.author))
+                        if len(cites_a) > 0:
+                            type_b.append(cite)
+                        else:
+                            type_a.append(cite)
+            types_a[paper.title[0]] = type_a
+            types_b[paper.title[0]] = type_b
+            autocites[paper.title[0]] = autocite
+            list_papers[paper.title[0]] = paper
+        except Exception as e:
+            print(show_exc(e))
+            sys.exit()
 
-prefix = int(time.time())
-print("")
+    prefix = int(time.time())
+    print("")
 
-lista = [types_a, types_b, autocites, list_papers]
+    lista = [types_a, types_b, autocites, list_papers]
 
-with open(f'{prefix}_cites.bin', 'wb') as binfile:
-    pickle.dump(lista, binfile)
+    with open(f'{prefix}_cites.bin', 'wb') as binfile:
+        pickle.dump(lista, binfile)
 
-print ("Info request finished".ljust(100))
+    print ("Info request finished".ljust(100))
