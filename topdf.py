@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import ads
 import time
 import pdfkit
@@ -62,92 +63,121 @@ if __name__ == "__main__":
         [types_a, types_b, autocites, list_papers] = lista
 
 
+    if True:
+
+        pdf = PDF()
+        pdf.add_font('Arial', '', '/usr/share/fonts/dejavu/DejaVuSans.ttf', uni=True)
 
 
-    pdf = PDF()
-    pdf.add_font('Arial', '', '/usr/share/fonts/dejavu/DejaVuSans.ttf', uni=True)
+        print ("Info request finished".ljust(100))
+        type_a_counter = 0
+        type_b_counter = 0
+        autocites_counter = 0
+        for title in types_a:
+            cites = types_a[title]
+            type_a_counter += len(cites)
+        for title in types_b:
+            cites = types_b[title]
+            type_b_counter += len(cites)
+        for title in autocites:
+            cites = autocites[title]
+            autocites_counter += len(cites)
+
+        pdf.add_page()
+        pdf.add_title('Citas a trabajo de investigactión de Omaira González Martín')
+        pdf.add_title(f'Total citas: {type_a_counter + type_b_counter + autocites_counter}')
+        pdf.add_title(f'Tipo A: {type_a_counter}')
+        pdf.add_title(f'Tipo B: {type_b_counter}')
+        pdf.add_title(f'Autocitas: {autocites_counter}')
+        pdf.add_title('Fuente: SAO/NASA ADS = https://ui.adsabs.harvard.edu')
+        pdf.add_title('Definiciones SNI')
+        pdf.add_title('Citas Tipo A: Aquellas citas realizadas por algún autor o grupo de investigación externo a usted o su grupo de trabajo.')
+        pdf.add_title('Citas Tipo B: Aquellas citas realizadas en productos de investigación firmados por algún miembro del grupo de trabajo donde se realizó el producto.')
+        pdf.add_title('Autocitas: Aquellas citas realizadas en productos de investigación firmados por el investigador mismo.\n')
+
+        pdf.add_page()
+        pdf.add_title('Citas Tipo A')
+        aux_counter = 0
+        for title in types_a:
+            aux_counter += 1
+            paper = list_papers[title]
+            cites = types_a[title]
+            type_a_counter += len(cites)
+            if (len(cites) > 0):
+                pdf.add_book(paper)
+                counter = 0
+                for cite in cites:
+                    counter += 1
+                    pdf.add_cite(cite, prefix=f"{counter}. ")
+                pdf.vspace()
+            print("Processing Type A: %.2lf %%    " % (aux_counter/len(types_a)*100), end="\r")
+        print ("")
+
+        pdf.add_page()
+        pdf.add_title('Citas Tipo B')
+        aux_counter = 0
+        for title in types_b:
+            aux_counter += 1
+            paper = list_papers[title]
+            cites = types_b[title]
+            type_b_counter += len(cites)
+            if (len(cites) > 0):
+                pdf.add_book(paper)
+                counter = 0
+                for cite in cites:
+                    counter += 1
+                    pdf.add_cite(cite, prefix=f"{counter}. ")
+            print("Processing Type B: %.2lf %%    " % (aux_counter/len(types_b)*100), end="\r")
+        print ("")
+
+        pdf.add_page()
+        pdf.add_title('Autocitas')
+        aux_counter = 0
+        for title in autocites:
+            aux_counter += 1
+            paper = list_papers[title]
+            cites = autocites[title]
+            autocites_counter += len(cites)
+            if (len(cites) > 0):
+                pdf.add_book(paper)
+                counter = 0
+                for cite in cites:
+                    counter += 1
+                    pdf.add_cite(cite, prefix=f"{counter}. ")
+            print("Processing Type B: %.2lf %%    " % (aux_counter/len(autocites)*100), end="\r")
+        print ("")
 
 
-    print ("Info request finished".ljust(100))
-    type_a_counter = 0
-    type_b_counter = 0
-    autocites_counter = 0
-    for title in types_a:
-        cites = types_a[title]
-        type_a_counter += len(cites)
-    for title in types_b:
-        cites = types_b[title]
-        type_b_counter += len(cites)
-    for title in autocites:
-        cites = autocites[title]
-        autocites_counter += len(cites)
+        pdf_output = args.output
+        pdf.output(pdf_output)
 
-    pdf.add_page()
-    pdf.add_title('Citas a trabajo de investigactión de Omaira González Martín')
-    pdf.add_title(f'Total citas: {type_a_counter + type_b_counter + autocites_counter}')
-    pdf.add_title(f'Tipo A: {type_a_counter}')
-    pdf.add_title(f'Tipo B: {type_b_counter}')
-    pdf.add_title(f'Autocitas: {autocites_counter}')
-    pdf.add_title('Fuente: SAO/NASA ADS = https://ui.adsabs.harvard.edu')
-    pdf.add_title('Definiciones SNI')
-    pdf.add_title('Citas Tipo A: Aquellas citas realizadas por algún autor o grupo de investigación externo a usted o su grupo de trabajo.')
-    pdf.add_title('Citas Tipo B: Aquellas citas realizadas en productos de investigación firmados por algún miembro del grupo de trabajo donde se realizó el producto.')
-    pdf.add_title('Autocitas: Aquellas citas realizadas en productos de investigación firmados por el investigador mismo.\n')
+        print(f"PDF generado: {pdf_output}")
+    else:
+        import pdfkit
+        import glob
+        options = {
+                'page-size': 'Letter',
+                'margin-top': '0.75in',
+                'margin-right': '0.75in',
+                'margin-bottom': '0.75in',
+                'margin-left': '0.75in',
+                'encoding': "UTF-8",
+                'custom-header': [
+                    ('Accept-Encoding', 'gzip')
+                ],
+                'cookie': [
+                    ('cookie-name1', 'cookie-value1'),
+                    ('cookie-name2', 'cookie-value2'),
+                ],
+                'outline-depth': 10,
+        }
 
-    pdf.add_page()
-    pdf.add_title('Citas Tipo A')
-    aux_counter = 0
-    for title in types_a:
-        aux_counter += 1
-        paper = list_papers[title]
-        cites = types_a[title]
-        type_a_counter += len(cites)
-        if (len(cites) > 0):
-            pdf.add_book(paper)
-            counter = 0
-            for cite in cites:
-                counter += 1
-                pdf.add_cite(cite, prefix=f"{counter}. ")
-            pdf.vspace()
-        print("Processing Type A: %.2lf %%    " % (aux_counter/len(types_a)*100), end="\r")
-    print ("")
+        summary = sorted(glob.glob("1*summary.html"))[-1]
+        pdfkit.from_url(summary, '00_summary.pdf', options=options)
+        cites = sorted(glob.glob("1*cites_a.html"))[-1]
+        pdfkit.from_url(cites, '01_cites_a.pdf', options=options)
+        cites = sorted(glob.glob("1*cites_b.html"))[-1]
+        pdfkit.from_url(cites, '02_cites_b.pdf', options=options)
+        cites = sorted(glob.glob("1*autocites.html"))[-1]
+        pdfkit.from_url(cites, '03_autocites.pdf', options=options)
 
-    pdf.add_page()
-    pdf.add_title('Citas Tipo B')
-    aux_counter = 0
-    for title in types_b:
-        aux_counter += 1
-        paper = list_papers[title]
-        cites = types_b[title]
-        type_b_counter += len(cites)
-        if (len(cites) > 0):
-            pdf.add_book(paper)
-            counter = 0
-            for cite in cites:
-                counter += 1
-                pdf.add_cite(cite, prefix=f"{counter}. ")
-        print("Processing Type B: %.2lf %%    " % (aux_counter/len(types_b)*100), end="\r")
-    print ("")
-
-    pdf.add_page()
-    pdf.add_title('Autocitas')
-    aux_counter = 0
-    for title in autocites:
-        aux_counter += 1
-        paper = list_papers[title]
-        cites = autocites[title]
-        autocites_counter += len(cites)
-        if (len(cites) > 0):
-            pdf.add_book(paper)
-            counter = 0
-            for cite in cites:
-                counter += 1
-                pdf.add_cite(cite, prefix=f"{counter}. ")
-        print("Processing Type B: %.2lf %%    " % (aux_counter/len(autocites)*100), end="\r")
-    print ("")
-
-
-    pdf_output = args.output
-    pdf.output(pdf_output)
-
-    print(f"PDF generado: {pdf_output}")
